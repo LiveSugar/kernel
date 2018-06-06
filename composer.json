@@ -4,8 +4,9 @@
     "keywords": ["livesugar","kernel"],
     "homepage": "https://github.com/LiveSugar/project",
     "type": "library",
-    "license": "BSD-3-Clause",
+    "license": "MIT",
     "minimum-stability": "dev",
+    "prefer-stable": true,
     "authors": [
         {
             "name": "Buturlakin Andrey",
@@ -23,6 +24,5 @@
         "php": ">=7.2.4"
     },
     "require-dev": {
-        "php": ">=7.2.4"
     }
 }
