@@ -300,9 +300,7 @@ Class view {
           require_once($view);
           $content .= ob_get_contents();
           ob_end_clean();
-        } else {
-          die('cannot find file: '.$view.'');
-        }
+        } 
 
         # return content
         $content = $minify($content);
