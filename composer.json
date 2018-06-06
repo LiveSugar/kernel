@@ -1,0 +1,28 @@
+{
+    "name": "livesugar/project",
+    "description": "LiveSugar Project",
+    "keywords": ["livesugar","kernel"],
+    "homepage": "https://github.com/LiveSugar/project",
+    "type": "library",
+    "license": "BSD-3-Clause",
+    "minimum-stability": "dev",
+    "authors": [
+        {
+            "name": "Buturlakin Andrey",
+            "email": "xezzus@gmail.com",
+            "homepage": "https://github.com/xezzus",
+            "role": "Founder and project lead"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/LiveSugar/kernel/issues",
+        "wiki": "https://github.com/LiveSugar/kernel/wiki",
+        "source": "https://github.com/kernel/framework"
+    },
+    "require": {
+        "php": ">=7.2.4"
+    },
+    "require-dev": {
+        "php": ">=7.2.4"
+    }
+}
