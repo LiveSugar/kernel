@@ -414,19 +414,6 @@ class file {
     //
     self::$page['title'] = [];
 
-
-    //
-    // INSTALL & CONFIG
-    //
-    if(isset(self::$uri[0])){
-      switch(self::$uri[0]){
-        case "install":
-          foreach(dir::get() as $key=>$val){ if(!is_dir($val)) mkdir($val); }
-          die('install');
-        break;
-      }
-    }
-
     //
     // UPLOAD
     //
