@@ -20,7 +20,8 @@
         "source": "https://github.com/kernel/framework"
     },
     "require": {
-        "php": ">=7.2.4"
+        "php": ">=7.2.4",
+        "livesugar/kernel": "0.*"
     },
     "require-dev": {
         "php": ">=7.2.4"
