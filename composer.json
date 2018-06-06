@@ -1,6 +1,6 @@
 {
-    "name": "livesugar/project",
-    "description": "LiveSugar Project",
+    "name": "livesugar/kernel",
+    "description": "LiveSugar Kernel",
     "keywords": ["livesugar","kernel"],
     "homepage": "https://github.com/LiveSugar/project",
     "type": "library",
