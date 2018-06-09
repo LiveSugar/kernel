@@ -1,13 +1,4 @@
 <?php
-
-//
-// COMPOSER
-//
-setlocale(LC_ALL, 'ru_RU.UTF-8');
-$composer = __DIR__ . '/../vendor/autoload.php';
-if(is_file($composer)) require $composer;
-unset($composer);
-
 //
 // AUTOLOAD CLASS
 //
@@ -15,6 +6,15 @@ spl_autoload_register(function ($name) {
   $file = dir::get('oops').$name.'.php';
   if(is_file($file)) require_once($file);
 });
+
+//
+// COMPOSER
+//
+setlocale(LC_ALL, 'ru_RU.UTF-8');
+$composer = __DIR__ . '/../../../vendor/autoload.php';
+if(is_file($composer)) require $composer;
+unset($composer);
+
 
 //
 // URI
