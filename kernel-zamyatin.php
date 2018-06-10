@@ -1,5 +1,13 @@
 <?php
 //
+// AUTOLOAD CLASS
+//
+spl_autoload_register(function ($name) {
+  $file = dir::get('oops').$name.'.php';
+  if(is_file($file)) require_once($file);
+});
+
+//
 // COMPOSER
 //
 setlocale(LC_ALL, 'ru_RU.UTF-8');
@@ -7,13 +15,6 @@ $composer = __DIR__ . '/../../../vendor/autoload.php';
 if(is_file($composer)) require $composer;
 unset($composer);
 
-//
-// AUTOLOAD CLASS
-//
-spl_autoload_register(function ($name) {
-  $file = dir::get('oops').$name.'.php';
-  if(is_file($file)) require_once($file);
-});
 
 //
 // URI
@@ -97,6 +98,7 @@ Class register {
     else return false;
   }
 
+
 }
 
 //
@@ -176,7 +178,7 @@ Class apps {
 
       return $is;
 
-    } 
+   } 
 
   }
 
@@ -338,7 +340,7 @@ class dir {
 class file {
 
   public static function find($hash){
-    $way = str_split($hash);
+    $way = str_split($hash,8);
     $name = array_pop($way);
     $way = implode('/',$way);
     $http = '/upload/'.$way.'/'.$name.'.file';
@@ -351,7 +353,7 @@ class file {
   public static function upload(){
     $file = file_get_contents('php://input');
     $hash = hash('sha256',$file);
-    $way = str_split($hash);
+    $way = str_split($hash,8);
     $name = array_pop($way);
     $way = implode('/',$way);
     $http = '/upload/'.$way.'/'.$name.'.file';
