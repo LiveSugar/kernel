@@ -352,6 +352,10 @@ class file {
 
   public static function upload(){
     $file = file_get_contents('php://input');
+    return self::save($file);
+  }
+
+  public static function save($file){
     $hash = hash('sha256',$file);
     $way = str_split($hash,8);
     $name = array_pop($way);
