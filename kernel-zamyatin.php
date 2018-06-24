@@ -339,11 +339,11 @@ class dir {
 //
 class file {
 
-  public static function find($hash){
+  public static function find($hash,$type='file'){
     $way = str_split($hash,8);
     $name = array_pop($way);
     $way = implode('/',$way);
-    $http = '/upload/'.$way.'/'.$name.'.file';
+    $http = '/upload/'.$way.'/'.$name.'.'.$type;
     $way = dir::get('upload').$way;
     $way = $way.'/'.$name.'.file';
     if(!is_file($way)) return false;
@@ -355,15 +355,15 @@ class file {
     return self::save($file);
   }
 
-  public static function save($file){
+  public static function save($file,$type='file'){
     $hash = hash('sha256',$file);
     $way = str_split($hash,8);
     $name = array_pop($way);
     $way = implode('/',$way);
-    $http = '/upload/'.$way.'/'.$name.'.file';
+    $http = '/upload/'.$way.'/'.$name.'.'.$type;
     $way = dir::get('upload').$way;
     if(!is_dir($way)) mkdir($way,0755,true);
-    $way = $way.'/'.$name.'.file';
+    $way = $way.'/'.$name.'.'.$type;
     if(!is_file($way)){ file_put_contents($way,$file); }
     return ['file'=>$way,'hash'=>$hash,'http'=>$http];
   }
