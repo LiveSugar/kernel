@@ -345,7 +345,7 @@ class file {
     $way = implode('/',$way);
     $http = '/upload/'.$way.'/'.$name.'.'.$type;
     $way = dir::get('upload').$way;
-    $way = $way.'/'.$name.'.file';
+    $way = $way.'/'.$name.'.'.$type;
     if(!is_file($way)) return false;
     return ['file'=>$way,'hash'=>$hash,'http'=>$http];
   }
