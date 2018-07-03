@@ -16,6 +16,7 @@ if(is_file($composer)) require $composer;
 unset($composer);
 
 
+
 //
 // URI
 //
@@ -370,6 +371,102 @@ class file {
 
 }
 
+/*
+//
+// Logging
+//
+Class logging {
+  public static function http(){
+    $msg = [];
+    $msg['time'] = date('d-m-Y H:i:s');
+    $msg['servers'] = $_SERVER;
+    $msg['raw_post'] = file_get_contents('php://input');
+    $msg = json_encode($msg);
+  }
+}
+
+//
+// Logging
+//
+Class logging {
+
+  private $type = false;
+  private $dir = false;
+
+  public function __construct($message,$type){
+
+    //
+    // Type
+    //
+    $this->type = $type;
+
+    //
+    // Dir
+    //
+    $dir = getcwd().'/../logs/';
+    $this->dir = $dir;
+    if(!is_dir($dir)) mkdir($dir);
+
+    //
+    // File
+    //
+    $file = $dir.'/'.$type.'.log';
+
+    //
+    // Rotation
+    //
+    if(is_file($file)){
+      $size = filesize($file)/pow(1024,2);
+      if($size > 0.1){
+        $gz = $dir.'/'.$type.'.log.'.$this->newid().'.gz';
+        $this->gzCompressFile($file,$gz);
+        unlink($file);
+      }
+    }
+
+    //
+    // Write
+    //
+    file_put_contents($file, $message.PHP_EOL , FILE_APPEND | LOCK_EX);
+  }
+
+  //
+  // New id
+  //
+  private function newid(){
+    $i = glob($this->dir.$this->type.'.log.*.gz');
+    $i = count($i);
+    $i++;
+    return $i;
+  }
+
+  //
+  // Gzip
+  //
+  private function gzCompressFile($source, $dest, $level = 9){ 
+      $mode = 'wb' . $level; 
+      $error = false; 
+      if ($fp_out = gzopen($dest, $mode)) { 
+          if ($fp_in = fopen($source,'rb')) { 
+              while (!feof($fp_in)) 
+                  gzwrite($fp_out, fread($fp_in, 1024 * 512)); 
+              fclose($fp_in); 
+          } else {
+              $error = true; 
+          }
+          gzclose($fp_out); 
+      } else {
+          $error = true; 
+      }
+      if ($error)
+          return false; 
+      else
+        return $dest; 
+  } 
+
+}
+ */
+
 
 //
 // ENGINE
@@ -407,11 +504,13 @@ class file {
     // APPS
     //
     self::$apps = new apps;
+    self::$apps->preload();
 
     //
     // APPS
     //
     self::$view = new view;
+    self::$view->preload();
 
     //
     // PAGE
@@ -474,6 +573,9 @@ class file {
 
       # exec apps
       $response = (new apps)($name,$json);
+
+
+      # return
       if($response === false){
         header("HTTP/1.0 404 Not Found",false,404);
         exit;
@@ -579,6 +681,7 @@ class file {
       }
     }
 
+    # build html
     switch($type){
       case "view":
         die(view::$content);
@@ -590,4 +693,6 @@ class file {
 
   }
 });
+
+
 ?>
