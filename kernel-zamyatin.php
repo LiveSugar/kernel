@@ -1,5 +1,10 @@
 <?php
 //
+// RAW POST
+//
+define('RAW_POST',file_get_contents('php://input'));
+
+//
 // AUTOLOAD CLASS
 //
 spl_autoload_register(function ($name) {
@@ -14,7 +19,6 @@ setlocale(LC_ALL, 'ru_RU.UTF-8');
 $composer = __DIR__ . '/../../../vendor/autoload.php';
 if(is_file($composer)) require $composer;
 unset($composer);
-
 
 
 //
@@ -352,8 +356,7 @@ class file {
   }
 
   public static function upload(){
-    $file = file_get_contents('php://input');
-    return self::save($file);
+    return self::save(RAW_POST);
   }
 
   public static function save($file,$type='file'){
@@ -370,103 +373,6 @@ class file {
   }
 
 }
-
-/*
-//
-// Logging
-//
-Class logging {
-  public static function http(){
-    $msg = [];
-    $msg['time'] = date('d-m-Y H:i:s');
-    $msg['servers'] = $_SERVER;
-    $msg['raw_post'] = file_get_contents('php://input');
-    $msg = json_encode($msg);
-  }
-}
-
-//
-// Logging
-//
-Class logging {
-
-  private $type = false;
-  private $dir = false;
-
-  public function __construct($message,$type){
-
-    //
-    // Type
-    //
-    $this->type = $type;
-
-    //
-    // Dir
-    //
-    $dir = getcwd().'/../logs/';
-    $this->dir = $dir;
-    if(!is_dir($dir)) mkdir($dir);
-
-    //
-    // File
-    //
-    $file = $dir.'/'.$type.'.log';
-
-    //
-    // Rotation
-    //
-    if(is_file($file)){
-      $size = filesize($file)/pow(1024,2);
-      if($size > 0.1){
-        $gz = $dir.'/'.$type.'.log.'.$this->newid().'.gz';
-        $this->gzCompressFile($file,$gz);
-        unlink($file);
-      }
-    }
-
-    //
-    // Write
-    //
-    file_put_contents($file, $message.PHP_EOL , FILE_APPEND | LOCK_EX);
-  }
-
-  //
-  // New id
-  //
-  private function newid(){
-    $i = glob($this->dir.$this->type.'.log.*.gz');
-    $i = count($i);
-    $i++;
-    return $i;
-  }
-
-  //
-  // Gzip
-  //
-  private function gzCompressFile($source, $dest, $level = 9){ 
-      $mode = 'wb' . $level; 
-      $error = false; 
-      if ($fp_out = gzopen($dest, $mode)) { 
-          if ($fp_in = fopen($source,'rb')) { 
-              while (!feof($fp_in)) 
-                  gzwrite($fp_out, fread($fp_in, 1024 * 512)); 
-              fclose($fp_in); 
-          } else {
-              $error = true; 
-          }
-          gzclose($fp_out); 
-      } else {
-          $error = true; 
-      }
-      if ($error)
-          return false; 
-      else
-        return $dest; 
-  } 
-
-}
- */
-
 
 //
 // ENGINE
@@ -567,8 +473,7 @@ Class logging {
       $name = implode('/',$name);
 
       # get value apps
-      $json = file_get_contents('php://input');
-      $json = json_decode($json,true);
+      $json = json_decode(RAW_POST,true);
       if(!is_array($json)) die('{}');
 
       # exec apps
@@ -577,10 +482,10 @@ Class logging {
 
       # return
       if($response === false){
-        header("HTTP/1.0 404 Not Found",false,404);
+        @header("HTTP/1.0 404 Not Found",false,404);
         exit;
       } else {
-        header('Content-Type: application/json');
+        @header('Content-Type: application/json');
         die(json_encode($response,JSON_UNESCAPED_UNICODE));
       }
     }
