@@ -29,6 +29,12 @@ Class uri {
   public $uri = [];
 
   public function __construct(){
+
+    if(!isset($_SERVER['REQUEST_URI'])) {
+      $this->uri = false;
+      return false;
+    }
+
     $uri = $_SERVER['REQUEST_URI'];
     $uri = parse_url($uri)['path'];
     $uri = explode('/',$uri);
@@ -426,7 +432,7 @@ class file {
     //
     // UPLOAD
     //
-    if($_SERVER['CONTENT_TYPE'] == 'application/octet-stream'){
+    if(isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'application/octet-stream'){
       $file = file::upload();
       header('Content-Type: application/json');
       die(json_encode($file,JSON_UNESCAPED_UNICODE));
@@ -461,7 +467,7 @@ class file {
     //
     // APPS EXEC
     //
-    if($_SERVER['CONTENT_TYPE'] == 'application/json'){
+    if(isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'application/json'){
 
       # get name apps
       $name = $_SERVER['REQUEST_URI'];
@@ -517,8 +523,6 @@ class file {
     //
     // PAGE
     //
-    header('TimeOfCompletion: '.round((microtime(1)-$timeStart),5,PHP_ROUND_HALF_EVEN).' sec');
-    header('MemoryUsage: '.round(((memory_get_usage()-$memoryStart)/1024),5,PHP_ROUND_HALF_EVEN).' KiB');
 
     if(empty(self::$uri)) $page = ['index'];
     else $page = self::$uri;
@@ -587,13 +591,15 @@ class file {
     }
 
     # build html
-    switch($type){
-      case "view":
-        die(view::$content);
-      break;
-      case "page":
-        (new page(view::$content));
-      break;
+    if(self::$uri !== false){
+      switch($type){
+        case "view":
+          die(view::$content);
+        break;
+        case "page":
+          (new page(view::$content));
+        break;
+      };
     };
 
   }
