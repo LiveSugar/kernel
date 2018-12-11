@@ -454,16 +454,16 @@ class file
         $memoryStart = memory_get_usage();
         $timeStart = microtime(1);
 
-        dir::set('core', getcwd().'/');
+        dir::set('core', __DIR__.'/../../');
         dir::set('apps', dir::get('core').'../apps/');
         dir::set('oops', dir::get('core').'../oops/');
         dir::set('road', dir::get('core').'../road/');
         dir::set('view', dir::get('core').'../view/');
-        dir::set('css', dir::get('core').'css/');
-        dir::set('js', dir::get('core').'js/');
-        dir::set('img', dir::get('core').'img/');
-        dir::set('font', dir::get('core').'font/');
-        dir::set('upload', dir::get('core').'upload/');
+        dir::set('css', dir::get('core').'../http/css/');
+        dir::set('js', dir::get('core').'../http/js/');
+        dir::set('img', dir::get('core').'../http/img/');
+        dir::set('font', dir::get('core').'../http/font/');
+        dir::set('upload', dir::get('core').'../http/upload/');
 
         //
         // URI
@@ -474,13 +474,11 @@ class file
         // APPS
         //
         self::$apps = new apps();
-        self::$apps->preload();
 
         //
         // APPS
         //
         self::$view = new view();
-        self::$view->preload();
 
         //
         // PAGE
@@ -577,6 +575,14 @@ class file
                 header('Content-Type: application/json');
                 die(json_encode($response, JSON_UNESCAPED_UNICODE));
             }
+        }
+
+        //
+        // APPS EXEC FROM CLI
+        //
+        if(isset($_SERVER['argv'])){
+            $response = (new apps())($_SERVER['argv'][1],null);
+            die(json_encode($response, JSON_UNESCAPED_UNICODE));
         }
 
         //
