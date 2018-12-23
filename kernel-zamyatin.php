@@ -581,6 +581,7 @@ class file
         // APPS EXEC FROM CLI
         //
         if(isset($_SERVER['argv'])){
+            if(!isset($_SERVER['argv'][1])) die('');
             $response = (new apps())($_SERVER['argv'][1],null);
             die(json_encode($response, JSON_UNESCAPED_UNICODE));
         }
