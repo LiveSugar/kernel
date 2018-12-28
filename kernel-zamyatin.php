@@ -220,6 +220,8 @@ class apps
             // is public
             if (isset($status['public']) && $status['public'] === true) {
                 self::$live = true;
+            } else {
+                self::$live = false;
             }
 
             // return
