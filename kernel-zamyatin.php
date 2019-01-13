@@ -1,5 +1,5 @@
 <?php
-set_time_limit(10000);
+set_time_limit(0);
 
 //
 // RAW POST
@@ -148,6 +148,7 @@ class apps
     private static $apps = null;
     private static $live = false;
     private static $data = null;
+    private static $type = null;
 
     public function __construct()
     {
@@ -155,10 +156,13 @@ class apps
             self::$apps = $this;
             register::set('apps', self::$apps);
         }
+
         if (!self::$view = register::get('view')) {
             self::$view = new view();
             register::set('view', self::$view);
         }
+
+
     }
 
     public function __get($name)
@@ -207,7 +211,10 @@ class apps
             } else {
                 $params = $value;
             }
+
             self::$data = null;
+
+            if(self::$type == 'http' && $status['public'] !== true) return null;
 
             // call function
             $function = call_user_func_array($function, $params);
@@ -231,11 +238,13 @@ class apps
         }
     }
 
-    public function __invoke($name, $data)
+    public function __invoke($name, $data, $type=null)
     {
         self::$data = $data;
+        self::$type = $type;
         $res = (new self())->{$name}();
-        if (self::$live === true) {
+
+        if (self::$live === true || $res === null) {
             return $res;
         } else {
             return false;
@@ -551,7 +560,7 @@ class file
             }
 
             // exec apps
-            $response = (new apps())($name, $json);
+            $response = (new apps())($name, $json, 'http');
 
             // return
             if ($response === false) {
