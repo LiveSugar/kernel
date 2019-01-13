@@ -162,7 +162,6 @@ class apps
             register::set('view', self::$view);
         }
 
-
     }
 
     public function __get($name)
@@ -174,6 +173,7 @@ class apps
 
     public function __call($name, $value)
     {
+
 
     // get name apps
         array_push(self::$save, $name);
@@ -214,7 +214,9 @@ class apps
 
             self::$data = null;
 
-            if(self::$type == 'http' && $status['public'] !== true) return null;
+            if(self::$type == 'http' && $status['public'] !== true) { return null; }
+
+            self::$type = null;
 
             // call function
             $function = call_user_func_array($function, $params);
@@ -250,6 +252,7 @@ class apps
             return false;
         }
     }
+
 }
 
 //
@@ -578,7 +581,7 @@ class file
         if (isset($_GET['apps'])) {
             $apps = $_GET['apps'];
             unset($_GET['apps']);
-            $response = (new apps())($apps, $_GET);
+            $response = (new apps())($apps, $_GET, 'http');
             if ($response === false) {
                 header('HTTP/1.0 404 Not Found', false, 404);
                 exit;
