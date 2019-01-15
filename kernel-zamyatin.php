@@ -611,7 +611,6 @@ class file
         //
         // PAGE
         //
-
         if (empty(self::$uri)) {
             $page = ['index'];
         } else {
@@ -626,6 +625,7 @@ class file
                 return false;
             }
         };
+
         $openRoad = function ($road) {
             $file = dir::get('road').'/'.$road.'.json';
             if (!is_file($file)) {
@@ -641,7 +641,38 @@ class file
             return $open;
         };
 
-        $isLink = function () use (&$page,&$isLink,$isRoad,$openRoad) {
+          // Is Auth
+          $i = 1;
+          while(true){
+
+            $parent = array_slice($page,0,$i);
+            if(empty($parent)) $parent = ['index'];
+            $parent = implode('/',$parent);
+            if(!$isRoad($parent)) break;
+            $auth =  $openRoad($parent);
+            if(isset($auth['auth'])){
+              foreach($auth['auth'] as $val){
+                $is = call_user_func_array([new apps(), $val], []);
+                if($is !== true){
+                  if(empty(self::$uri)){
+                    die('<h1>STOP</h1>');
+                  } else {
+                      header('Location: /');
+                  }
+                }
+              }
+            };
+
+            $i++;
+            if(!isset($page[$i])) break;
+
+          };
+
+
+        $isLink = function() use (&$page,&$isLink,$isRoad,$openRoad) {
+
+
+          // Current Road
             $link = implode('/', $page);
             $is = $isRoad($link);
             if ($is !== false) {
@@ -658,6 +689,7 @@ class file
 
         $page = $isLink();
 
+        // is view
         if ($page === false || !isset($page['view']) || empty($page['view'])) {
             header('HTTP/1.0 404 Not Found');
             die('<h1 style="font-size:5000%;margin:0px;padding:0px;text-align:center;line-height:63%;color:#eee;padding-top:8%;">404</h1>');
@@ -704,13 +736,13 @@ class file
         // build html
         if (self::$uri !== false) {
             switch ($type) {
-        case 'view':
-          die(view::$content);
-        break;
-        case 'page':
-          (new page(view::$content));
-        break;
-      }
+              case 'view':
+                die(view::$content);
+              break;
+              case 'page':
+                (new page(view::$content));
+              break;
+            }
         }
     }
 });
