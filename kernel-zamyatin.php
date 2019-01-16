@@ -609,6 +609,23 @@ class file
         }
 
         //
+        // VIEW EXEC
+        //
+        if (isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'application/view') {
+            $name = $_SERVER['REQUEST_URI'];
+            $name = explode('/', $name);
+            $name = array_filter($name, function ($val, $key) {
+                $val = (string) trim($val);
+                if (!empty($val)) {
+                    return $val;
+                }
+            }, ARRAY_FILTER_USE_BOTH);
+            $name = implode('/', $name);
+            call_user_func_array([new view(), $name], []);
+            die(view::$content);
+        }
+
+        //
         // PAGE
         //
         if (empty(self::$uri)) {
