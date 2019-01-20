@@ -85,7 +85,7 @@ class page
   <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
   <meta name="theme-color" content="#ffffff">
 ';
-        die('<!DOCTYPE html><html><head>'.$favicon.'<meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="description" content="'.self::description().'"><meta name="keywords" content="'.self::keywords().'"><meta name="GENERATOR" content="livesugar"><link href="/favicon.ico" rel="shortcut icon"><title>'.self::title().'</title></head><body>'.$html.'</body></html>');
+        die('<!DOCTYPE html><html><head>'.$favicon.'<meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="description" content="'.self::description().'"><meta name="keywords" content="'.self::keywords().'"><link href="/favicon.ico" rel="shortcut icon"><title>'.self::title().'</title></head><body>'.$html.'</body></html>');
     }
 
     public static function title($title = null)
