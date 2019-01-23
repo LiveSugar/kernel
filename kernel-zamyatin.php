@@ -85,7 +85,7 @@ class page
   <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
   <meta name="theme-color" content="#ffffff">
 ';
-        die('<!DOCTYPE html><html><head>'.$favicon.'<meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="description" content="'.self::description().'"><meta name="keywords" content="'.self::keywords().'"><link href="/favicon.ico" rel="shortcut icon"><title>'.self::title().'</title></head><body>'.$html.'</body></html>');
+      die('<!DOCTYPE html><html><head>'.$favicon.'<meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="description" content="'.self::description().'"><meta name="keywords" content="'.self::keywords().'"><link href="/favicon.ico" rel="shortcut icon"><title>'.self::title().'</title></head><body>'.$html.'</body></html>');
     }
 
     public static function title($title = null)
@@ -265,7 +265,9 @@ class view
     protected static $apps = null;
     protected static $view = null;
     protected static $uri = [];
-    public static $content = '';
+    public static $contentHtml = '';
+    public static $contentJs = '';
+    public static $contentCss = '';
 
     public function __construct()
     {
@@ -290,21 +292,10 @@ class view
 
     public function __call($name, $value)
     {
-        $content = '';
+        $contentHtml = null;
+        $contentJs = null;
+        $contentCss = null;
 
-        //
-        // MINIFY
-        //
-        $minify = function ($buffer) {
-            if (!isset($_GET['minifyoff'])) {
-                //$buffer = preg_replace('#([^:])\/\/.*(\n?)$#m','$1',$buffer);
-                $buffer = preg_replace('/\<\!\-\-[\s\S]*\-\-\>/ui', ' ', $buffer);
-                //$buffer = preg_replace('/[\s]+/ui',' ',$buffer);
-                $buffer = preg_replace('/\>[\s]+\</ui', '><', $buffer);
-            }
-
-            return $buffer;
-        };
         array_push(self::$save, $name);
         $dir = dir::get('view').implode('/', self::$save);
         $view = $dir.'/index.phtml';
@@ -324,10 +315,8 @@ class view
                     $file = dir::get('js').$file.'.js';
                     if (is_file($file)) {
                         ob_start();
-                        echo '<script>';
                         require_once $file;
-                        echo '</script>';
-                        $content .= ob_get_contents();
+                        $contentJs .= ob_get_contents();
                         ob_end_clean();
                     }
                 }
@@ -338,10 +327,8 @@ class view
                     $file = dir::get('css').$file.'.css';
                     if (is_file($file)) {
                         ob_start();
-                        echo '<style>';
                         require_once $file;
-                        echo '</style>';
-                        $content .= ob_get_contents();
+                        $contentCss .= ob_get_contents();
                         ob_end_clean();
                     }
                 }
@@ -351,20 +338,16 @@ class view
         // load js
         if (is_file($js)) {
             ob_start();
-            echo '<script>';
             require_once $js;
-            echo '</script>';
-            $content .= ob_get_contents();
+            $contentJs .= ob_get_contents();
             ob_end_clean();
         }
 
         // load css
         if (is_file($css)) {
             ob_start();
-            echo '<style>';
             require_once $css;
-            echo '</style>';
-            $content .= ob_get_contents();
+            $contentCss .= ob_get_contents();
             ob_end_clean();
         }
 
@@ -372,12 +355,14 @@ class view
         if (is_file($view)) {
             ob_start();
             require_once $view;
-            $content .= ob_get_contents();
+            $contentHtml .= ob_get_contents();
             ob_end_clean();
         }
 
         // return content
-        self::$content .= $minify($content);
+        self::$contentHtml = $contentHtml;
+        self::$contentJs = $contentJs;
+        self::$contentCss = $contentCss;
     }
 }
 
@@ -461,7 +446,6 @@ class file
     public static $view = null;
     public static $apps = null;
     public static $page = [];
-    public static $minify = null;
 
     public function __construct()
     {
@@ -545,7 +529,7 @@ class file
         //
         if (isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'application/json') {
 
-      // get name apps
+          // get name apps
             $name = $_SERVER['REQUEST_URI'];
             $name = explode('/', $name);
             $name = array_filter($name, function ($val, $key) {
@@ -605,7 +589,7 @@ class file
         //
         if (isset($_GET['view'])) {
             call_user_func_array([new view(), $_GET['view']], []);
-            die(view::$content);
+            die('<style>'.view::$contentCss.'</style>'.view::$contentHtml.'<script>'.view::$contentJs.'</script>');
         }
 
         //
@@ -622,7 +606,7 @@ class file
             }, ARRAY_FILTER_USE_BOTH);
             $name = implode('/', $name);
             call_user_func_array([new view(), $name], []);
-            die(view::$content);
+            die('<style>'.view::$contentCss.'</style>'.view::$contentHtml.'<script>'.view::$contentJs.'</script>');
         }
 
         //
@@ -685,9 +669,7 @@ class file
 
           };
 
-
         $isLink = function() use (&$page,&$isLink,$isRoad,$openRoad) {
-
 
           // Current Road
             $link = implode('/', $page);
@@ -752,12 +734,23 @@ class file
 
         // build html
         if (self::$uri !== false) {
+
+          if (isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'application/page') {
+            header('Content-Type: application/json');
+            $response = [
+                'css' => view::$contentCss,
+                'js' => view::$contentJs,
+                'html' => view::$contentHtml
+            ];
+            $response = json_encode($response,JSON_UNESCAPED_UNICODE);
+            die($response);
+          }
             switch ($type) {
               case 'view':
-                die(view::$content);
+                die('<style>'.view::$contentCss.'</style>'.view::$contentHtml.'<script>'.view::$contentJs.'</script>');
               break;
               case 'page':
-                (new page(view::$content));
+                (new page('<style>'.view::$contentCss.'</style>'.view::$contentHtml.'<script>'.view::$contentJs.'</script>'));
               break;
             }
         }
