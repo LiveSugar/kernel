@@ -1,5 +1,4 @@
 <?php
-set_time_limit(0);
 
 //
 // RAW POST
@@ -393,51 +392,6 @@ class dir
 }
 
 //
-// File
-//
-class file
-{
-    public static function find($hash, $type = 'file')
-    {
-        $way = str_split($hash, 8);
-        $name = array_pop($way);
-        $way = implode('/', $way);
-        $http = '/upload/'.$way.'/'.$name.'.'.$type;
-        $way = dir::get('upload').$way;
-        $way = $way.'/'.$name.'.'.$type;
-        if (!is_file($way)) {
-            return false;
-        }
-
-        return ['file'=>$way, 'hash'=>$hash, 'http'=>$http];
-    }
-
-    public static function upload()
-    {
-        return self::save(RAW_POST);
-    }
-
-    public static function save($file, $type = 'file')
-    {
-        $hash = hash('sha256', $file);
-        $way = str_split($hash, 8);
-        $name = array_pop($way);
-        $way = implode('/', $way);
-        $http = '/upload/'.$way.'/'.$name.'.'.$type;
-        $way = dir::get('upload').$way;
-        if (!is_dir($way)) {
-            mkdir($way, 0755, true);
-        }
-        $way = $way.'/'.$name.'.'.$type;
-        if (!is_file($way)) {
-            file_put_contents($way, $file);
-        }
-
-        return ['file'=>$way, 'hash'=>$hash, 'http'=>$http];
-    }
-}
-
-//
 // ENGINE
 //
 (new class() {
@@ -482,15 +436,6 @@ class file
         // PAGE
         //
         self::$page['title'] = [];
-
-        //
-        // UPLOAD
-        //
-        if (isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'application/octet-stream') {
-            $file = file::upload();
-            header('Content-Type: application/json');
-            die(json_encode($file, JSON_UNESCAPED_UNICODE));
-        }
 
         //
         // LOAD IMAGE
