@@ -362,6 +362,9 @@ class view
         self::$contentHtml = $contentHtml;
         self::$contentJs = $contentJs;
         self::$contentCss = $contentCss;
+        
+        if(isset($value[0]) && $value[0] === true) echo '<style>'.$contentCss.'</style>'.$contentHtml.'<script>'.$contentJs.'</script>';
+
     }
 }
 
