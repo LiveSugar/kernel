@@ -10,6 +10,7 @@ define('RAW_POST', file_get_contents('php://input'));
 //
 spl_autoload_register(function ($name) {
     $file = dir::get('oops').$name.'.php';
+    $file = str_replace('\\','/',$file);
     if (is_file($file)) {
         require_once $file;
     }
