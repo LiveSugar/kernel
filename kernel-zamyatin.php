@@ -214,7 +214,7 @@ class apps
 
             self::$data = null;
 
-            if(self::$type == 'http' && $status['public'] !== true) { return null; }
+            if(self::$type == 'http' && (!isset($status['public']) || $status['public'] !== true)) { return null; }
 
             self::$type = null;
 
